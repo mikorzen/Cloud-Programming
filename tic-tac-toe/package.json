@@ -1,0 +1,28 @@
+{
+	"dependencies": {},
+	"devDependencies": {
+		"autoprefixer": "^10.4.17",
+		"daisyui": "^4.7.2",
+		"postcss": "^8.4.35",
+		"postcss-cli": "^11.0.0",
+		"postcss-load-config": "^5.0.3",
+		"prettier": "^3.2.5",
+		"prettier-plugin-tailwindcss": "^0.5.11",
+		"tailwindcss": "^3.4.1"
+	},
+	"watch": {
+		"build:tailwindcss": {
+			"patterns": [
+				"static/**/*.{html,ts}",
+				"templates/**/*.{html,ts}"
+			],
+			"extensions": "html,ts",
+			"quiet": false
+		}
+	},
+	"scripts": {
+		"build:css": "postcss ./static/base.css --config css-config -o ./static/styles.css",
+		"watch:css": "bun run build:css --watch"
+	},
+	"type": "module"
+}

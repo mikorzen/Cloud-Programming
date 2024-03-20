@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Demo site showcasing a simple tic-tac-toe web app created with the PyHAT stack." />
+    <title>
+        {% block title %} 
+            Tic-tac-toe
+        {% endblock %}
+    </title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', path='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
+    <script src="{{ url_for('static', path='htmx.min.js') }}"></script>
+    <script src="{{ url_for('static', path='_hyperscript.min.js') }}"></script>
+    <script type="text/hyperscript">
+        js
+            let createSocket = () => new WebSocket(`ws://127.0.0.1:8000/game`);
+            return { createSocket };
+        end
+
+        on click from #button-play
+            set $mySocket to createSocket()
+            set $mySocket's onmessage to onSocketMessage
+            set $username to #input-username's value
+            set #input-username's value to ''
+            wait 100ms
+            call $mySocket's send(JSON's stringify({ username: $username }))
+        end
+    </script>
+</head>
+
+<body>
+    {% include "shared/_header.html" %} 
+
+    <main class="mb-20">
+        {% include "pages/_tictactoe.html" %} 
+    </main>
+
+    {% include "shared/_footer.html" %} 
+</body>
+
+</html>
