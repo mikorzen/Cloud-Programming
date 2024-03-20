@@ -21,12 +21,20 @@
         end
 
         on click from #button-play
+            set $username to #input-username's value
+            if $username == ''
+                call gameDialog('Error', 'Please enter a username to play')
+                exit
+            end
             set $mySocket to createSocket()
             set $mySocket's onmessage to onSocketMessage
-            set $username to #input-username's value
             set #input-username's value to ''
             wait 100ms
             call $mySocket's send(JSON's stringify({ username: $username }))
+        end
+
+        on keyup[key=="Enter"] from #input-username
+            call #button-play's click()
         end
     </script>
 </head>
