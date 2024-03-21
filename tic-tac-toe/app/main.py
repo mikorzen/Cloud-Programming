@@ -1,16 +1,9 @@
 # ruff: noqa: F401, ERA001
 
-from pathlib import Path
-
-from configuration import templates
+from configuration import static_files, templates
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from logic.manager import GameFullError, GameManager, GameOver, InvalidMoveError
-from logic.tictactoe import Draw
-
-_STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
-static_files = StaticFiles(directory=_STATIC_DIR)
 
 app = FastAPI()
 app.mount("/static", app=static_files, name="static")
@@ -47,8 +40,6 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
 
     try:
         await game_manager.run_game(websocket)
-    except Draw as e:
-        await websocket.send_json({"error": str(e)})
     except InvalidMoveError as e:
         await websocket.send_json({"error": str(e)})
     except GameOver:
