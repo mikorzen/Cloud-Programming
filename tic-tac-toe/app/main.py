@@ -27,7 +27,7 @@ async def reset(request: Request) -> HTMLResponse:
 
 
 @app.websocket("/game")
-async def websocket_endpoint(websocket: WebSocket) -> None:
+async def game(websocket: WebSocket) -> None:
     global game_manager  # noqa: PLW0603
     if not game_manager:
         game_manager = GameManager()
