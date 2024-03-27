@@ -13,7 +13,7 @@ game_manager: GameManager | None = None
 
 @app.get("/")
 async def root(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("base.html", context={"request": request})
+    return templates.TemplateResponse("tictactoe.html", context={"request": request})
 
 
 @app.get("/reset")
@@ -21,8 +21,9 @@ async def reset(request: Request) -> HTMLResponse:
     global game_manager  # noqa: PLW0603
     game_manager = None
     return templates.TemplateResponse(
-        "pages/_tictactoe.html",
+        "tictactoe.html",
         context={"request": request},
+        block_name="content",
     )
 
 

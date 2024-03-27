@@ -1,3 +1,5 @@
+{% extends "shared/_base.html" %}
+
 <script type="text/hyperscript">
 	def onSocketMessage(message)
 		set data to JSON's parse(message's data)
@@ -14,7 +16,7 @@
 			into #player-info
 			put `against <span class="font-bold">${data's opponent}</span>`
 			into #opponent-info
-		else 
+		else
 			put `Waiting for an opponent...` into #opponent-info
 		end
 
@@ -72,6 +74,7 @@
 	end
 </script>
 
+{% block content %}
 <div class="form-control mt-8 items-center justify-center">
 	<p id="player-info" class="text-xl"></p>
 	<p id="opponent-info" class="text-3xl"></p>
@@ -79,12 +82,12 @@
 </div>
 
 <div
-	class="bg-base-300 mx-auto mt-4 grid h-[600px] w-[600px] grid-cols-3 grid-rows-3 rounded-xl border-8 border-solid border-transparent text-white"
+	class="bg-base-300 mx-auto mt-4 grid size-[600px] grid-cols-3 grid-rows-3 rounded-xl border-8 border-solid border-transparent font-['Helvetica'] text-5xl font-bold text-white"
 	id="square-grid">
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="0"
 			title="Top-left square"
 			disabled></button>
@@ -92,7 +95,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="1"
 			title="Top-middle square"
 			disabled></button>
@@ -100,7 +103,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="2"
 			title="Top-right square"
 			disabled></button>
@@ -108,7 +111,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="3"
 			title="Middle-left square"
 			disabled></button>
@@ -116,7 +119,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="4"
 			title="Middle square"
 			disabled></button>
@@ -124,7 +127,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="5"
 			title="Middle-right square"
 			disabled></button>
@@ -132,7 +135,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="6"
 			title="Bottom-left square"
 			disabled></button>
@@ -140,7 +143,7 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="7"
 			title="Bottom-middle square"
 			disabled></button>
@@ -148,10 +151,11 @@
 	<div class="border-base-300 flex items-center justify-center rounded-xl border-8 border-solid">
 		<button
 			type="button"
-			class="bg-base-100 h-full w-full cursor-not-allowed rounded-lg font-['Helvetica'] text-5xl font-bold"
+			class="bg-base-100 size-full cursor-not-allowed rounded-lg"
 			data-index="8"
 			title="Bottom-right square"
 			disabled></button>
 	</div>
 </div>
-{% include "pages/partials/_tictactoe-game-over-dialog.html" %}
+{% endblock content %}
+{% include "partials/_tictactoe-game-over-dialog.html" %}

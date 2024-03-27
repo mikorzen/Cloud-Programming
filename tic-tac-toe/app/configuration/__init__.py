@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from jinja2_fragments.fastapi import Jinja2Blocks
 
 __all__ = [
     "templates",
@@ -21,4 +21,4 @@ static_files = StaticFiles(directory=_STATIC_DIR)
 
 # Bind the template directory to a Jinja2Templates object
 # that will be used to serve templates on request
-templates = Jinja2Templates(_TEMPLATE_DIR)
+templates = Jinja2Blocks(_TEMPLATE_DIR)

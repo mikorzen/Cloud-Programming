@@ -8,12 +8,14 @@
     <title>
         {% block title %} 
             Tic-tac-toe
-        {% endblock %}
+        {% endblock title %}
     </title>
     <link rel="icon" type="image/png" href="{{ url_for('static', path='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
     <script src="{{ url_for('static', path='htmx.min.js') }}"></script>
     <script src="{{ url_for('static', path='_hyperscript.min.js') }}"></script>
+    {% block script %}
+    {% endblock script %}
     <script type="text/hyperscript">
         js
             let createSocket = () => new WebSocket(`ws://127.0.0.1:8000/game`);
@@ -39,11 +41,15 @@
     </script>
 </head>
 
-<body>
+<body x-data="{ 
+    createSocket() { return new WebSocket(`ws://127.0.0.1:8000/game`) }, 
+    username: '' 
+}">
     {% include "shared/_header.html" %} 
 
     <main class="mb-20">
-        {% include "pages/_tictactoe.html" %} 
+        {% block content %}
+        {% endblock content %}
     </main>
 
     {% include "shared/_footer.html" %} 
