@@ -33,7 +33,7 @@ resource "aws_subnet" "subnet" {
 }
 
 
-resource "aws_internet_gateway" "gateway" {  # Utworzenie bramy do Internetu
+resource "aws_internet_gateway" "gateway" {  # Utworzenie bramy do komunikacji z Internetem
   vpc_id = aws_vpc.vpc.id
 }
 
