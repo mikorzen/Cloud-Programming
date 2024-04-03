@@ -16,7 +16,7 @@
     <script src="{{ url_for('static', path='_hyperscript.min.js') }}"></script>
     <script type="text/hyperscript">
         js
-            let createSocket = () => new WebSocket(`ws://127.0.0.1:8080/game`);
+            let createSocket = () => new WebSocket(`ws://54.147.29.172:8080/game`);
             return { createSocket };
         end
 
@@ -29,7 +29,7 @@
             set $mySocket to createSocket()
             set $mySocket's onmessage to onSocketMessage
             set #input-username's value to ''
-            wait 100ms
+            wait 500ms
             call $mySocket's send(JSON's stringify({ username: $username }))
         end
 
