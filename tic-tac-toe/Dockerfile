@@ -11,3 +11,5 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 RUN pip install 'uvicorn[standard]'
 
 EXPOSE 8080
+
+CMD ["python","app/main.py"]
