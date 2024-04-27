@@ -3,20 +3,30 @@
 		id="input-username"
 		type="text"
 		placeholder="Username"
-		class="input input-bordered bg-base-300 peer w-full placeholder-transparent"
-        x-model="username" />
+		class="peer input input-bordered w-full bg-base-300 placeholder-transparent"
+		x-model="username"
+	/>
 	<label
 		for="input-username"
-		class="label text-base-content bg-base-300 pointer-events-none absolute -top-4 left-3 text-xs text-opacity-50 transition-all peer-placeholder-shown:top-1.5 peer-placeholder-shown:bg-transparent peer-placeholder-shown:text-sm">
+		class="label pointer-events-none absolute -top-4 left-3 bg-base-300 text-xs text-base-content text-opacity-50 transition-all peer-placeholder-shown:top-1.5 peer-placeholder-shown:bg-transparent peer-placeholder-shown:text-sm"
+	>
 		Username
 	</label>
 </div>
-<button id="button-play" type="button" class="btn btn-ghost text-base ml-2" @click="handlePlay"    
+<button
+	id="button-play"
+	type="button"
+	class="btn btn-ghost ml-2 text-base"
+	@click="handlePlay"
+	@keyup.enter="handlePlay"
 	x-data="{
         handlePlay() {
             mySocket = new WebSocket(`ws://${window.location.host}/game`);
             mySocket.onopen = () => mySocket.send(JSON.stringify({ username }));
             mySocket.onmessage = onSocketMessage;
-            username = '';
+			username = '';
         },
-    }">Play</button>
+    }"
+>
+	Play
+</button>
