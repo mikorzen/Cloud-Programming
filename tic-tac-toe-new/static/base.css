@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html {
+		font-family: "Montserrat", "Lato", ui-sans-serif, system-ui, sans-serif, 
+			"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	}
+}
+
+.search-box-transition {
+	transition:
+		width 0.2s ease-in-out,
+		border-color 0.2s ease-in-out;
+}
+
+.square-border {
+	@apply border-8 border-solid border-base-300 rounded-xl flex justify-center items-center;
+}
+
+.square {
+	@apply w-full h-full bg-base-100 rounded-lg font-bold font-['Helvetica'] text-5xl;
+}

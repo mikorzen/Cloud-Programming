@@ -1,0 +1,16 @@
+{
+	"editor.quickSuggestions": {
+		"strings": "on"
+	},
+	"files.associations": {
+		"*.html": "jinja-html",
+		"*.css": "tailwindcss"
+	},
+	"emmet.includeLanguages": {
+		"jinja-html": "html"
+	},
+	"tailwindCSS.includeLanguages": {
+		"jinja-html": "html"
+	},
+	"prettier.configPath": "prettier.config.js"
+}
