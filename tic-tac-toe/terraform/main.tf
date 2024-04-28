@@ -12,11 +12,6 @@ provider "aws" {
 }
 
 
-resource "aws_ecr_repository" "ecr" {
-  name = "tictactoe-repo" # Utworzenie repozytorium ECR (Elastic Container Registry)
-}
-
-
 data "aws_vpc" "vpc" {
   default = true # Ustawienie domyślnej sieci VPC
 }
@@ -62,6 +57,47 @@ resource "aws_security_group" "security" {
 }
 
 
+data "aws_subnets" "subnets" { # Pobranie informacji o podsieciach w VPC
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.vpc.id]
+  }
+}
+
+
+resource "aws_ecr_repository" "ecr" {
+  name = "tictactoe-repo" # Utworzenie repozytorium ECR (Elastic Container Registry)
+}
+
+
+resource "aws_alb" "lb" {
+  name               = "tictactoe-lb"                   # Utworzenie Load Balancera
+  load_balancer_type = "application"                    # Ustawienie typu Load Balancera
+  security_groups    = [aws_security_group.security.id] # Ustawienie grupy zabezpieczeń
+  subnets            = data.aws_subnets.subnets.ids     # Ustawienie podsieci
+}
+
+
+resource "aws_alb_target_group" "lb_target_group" {
+  name     = "tictactoe-tg" # Utworzenie grupy docelowej Load Balancera
+  port     = 80             # Ustawienie portu
+  protocol = "HTTP"         # Ustawienie protokołu
+  vpc_id   = data.aws_vpc.vpc.id
+}
+
+
+resource "aws_alb_listener" "lb_listener" {
+  load_balancer_arn = aws_alb.lb.arn # Przypisanie Load Balancera do słuchacza
+  port              = "80"           #
+  protocol          = "HTTP"         # Nasłuchiwanie na HTTP
+
+  default_action {
+    type             = "forward"                                # Ustawienie akcji słuchacza
+    target_group_arn = aws_alb_target_group.lb_target_group.arn # Przypisanie grupy docelowej
+  }
+}
+
+
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = "tictactoe-cluster" # Utworzenie klastra ECS (Elastic Container Service)
 }
@@ -93,14 +129,6 @@ resource "aws_ecs_task_definition" "ecs_task" {
 }
 
 
-data "aws_subnets" "subnets" { # Pobranie informacji o podsieciach w VPC
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.vpc.id]
-  }
-}
-
-
 resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.id       # Ustawienie klastra ECS dla serwisu
@@ -112,5 +140,11 @@ resource "aws_ecs_service" "ecs_service" {
     subnets          = data.aws_subnets.subnets.ids
     security_groups  = [aws_security_group.security.id]
     assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.lb_target_group.arn
+    container_name   = var.ecs_container_name
+    container_port   = 8080
   }
 }
