@@ -3,8 +3,8 @@ from typing import Any
 from fastapi import WebSocket
 from game.state import GameState
 from models import (
-    GameOver,
     GameFullError,
+    GameOver,
     GameOverResponse,
     IllegalMoveError,
     PlayersResponse,
@@ -50,7 +50,7 @@ class GameManager:
                 player.update({"websocket": websocket})
                 return
 
-        raise GameFullError()
+        raise GameFullError
 
     async def assign_player(
         self: "GameManager",
@@ -63,7 +63,9 @@ class GameManager:
             return
 
         self.player1.update({"opponent": username})
-        self.player2.update({"username": username, "opponent": self.player1.get("username")})
+        self.player2.update(
+            {"username": username, "opponent": self.player1.get("username")},
+        )
         await self.broadcast(ResponseType.PLAYERS)
         await self.broadcast(ResponseType.STATE)
 
