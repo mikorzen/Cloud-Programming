@@ -23,11 +23,11 @@
 			gameDialog("Error", data.error);
 			return;
 		} else if (type === messageTypes.PLAYERS) {
-			const username = Alpine.store("username");
 			player = data.player;
 			opponent = data.opponent;
-			const symbol = boardMap.get(player);
 
+			const username = Alpine.store("username");
+			const symbol = boardMap.get(player);
 			document.getElementById("player-info").innerHTML =
 				`You (<span class="font-bold">${username}</span>) are playing  as ${symbol}`;
 
@@ -49,13 +49,14 @@
 			} else {
 				description = "It's a draw!";
 			}
-			gameOver(squares, data.error, description);
+			gameOver(squares, "Game over", description);
+			return;
 		}
 		updateBoard(squares, data.turn, data.board);
 	}
 
 	function updateBoard(squares, turn, board) {
-		symbol = boardMap.get(turn);
+		const symbol = boardMap.get(turn);
 		document.getElementById("turn-info").innerHTML = `${symbol}'s turn`;
 		squares.forEach((square, i) => {
 			square.innerHTML = boardMap.get(board[i]);
@@ -80,35 +81,32 @@
 		});
 		gameDialog(title, message);
 	}
+
+	function gameDialog(title, message) {
+		const gameDialog = document.getElementById("game-dialog");
+		gameDialog.querySelector("h2").innerHTML = title;
+		gameDialog.querySelector("p").innerHTML = message;
+		gameDialog.showModal();
+	}
 </script>
 
-<div x-data="{ isDialogOpen: false, dialogTitle: '', dialogMessage: '' }"
-	x-init="{
-		gameDialog(title, message) {
-			dialogTitle = title;
-			dialogMessage = message;
-			isDialogOpen = true;
-		}
-	}"
+{% include "partials/game/_game-info.html" %}
+
+<div
+	id="square-grid"
+	class="mx-auto mt-4 grid size-[600px] grid-cols-3 grid-rows-3 rounded-xl border-8 border-solid border-transparent bg-base-300 font-['Helvetica'] text-5xl font-bold text-white"
 >
-	{% include "partials/game/_game-info.html" %}
-
-	<div
-		id="square-grid"
-		class="mx-auto mt-4 grid size-[600px] grid-cols-3 grid-rows-3 rounded-xl border-8 border-solid border-transparent bg-base-300 font-['Helvetica'] text-5xl font-bold text-white"
-	>
-		{% for i in range(9) %}
-		<div class="flex items-center justify-center rounded-xl border-8 border-solid border-base-300">
-			<button
-				type="button"
-				class="size-full cursor-not-allowed rounded-lg bg-base-100"
-				data-index="{{ i }}"
-				disabled
-				@click="mySocket.send(JSON.stringify({ position: $event.target.dataset.index }))"
-			></button>
-		</div>
-		{% endfor %}
+	{% for i in range(9) %}
+	<div class="flex items-center justify-center rounded-xl border-8 border-solid border-base-300">
+		<button
+			type="button"
+			class="size-full cursor-not-allowed rounded-lg bg-base-100"
+			data-index="{{ i }}"
+			disabled
+			@click="mySocket.send(JSON.stringify({ position: $event.target.dataset.index }))"
+		></button>
 	</div>
-
-	{% include "partials/game/_game-dialog.html" %}
+	{% endfor %}
 </div>
+
+{% include "partials/game/_game-dialog.html" %}

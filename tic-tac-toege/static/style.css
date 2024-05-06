@@ -1820,6 +1820,15 @@ input.tab:checked + .tab-content,
 .left-3 {
   left: 0.75rem;
 }
+.bottom-\[-100px\] {
+  bottom: -100px;
+}
+.-bottom-5 {
+  bottom: -1.25rem;
+}
+.-bottom-10 {
+  bottom: -2.5rem;
+}
 .mx-3 {
   margin-left: 0.75rem;
   margin-right: 0.75rem;
@@ -1870,6 +1879,15 @@ input.tab:checked + .tab-content,
 .h-7 {
   height: 1.75rem;
 }
+.h-screen {
+  height: 100vh;
+}
+.h-full {
+  height: 100%;
+}
+.min-h-screen {
+  min-height: 100vh;
+}
 .w-1\/5 {
   width: 20%;
 }
@@ -1891,6 +1909,9 @@ input.tab:checked + .tab-content,
 .min-w-56 {
   min-width: 14rem;
 }
+.shrink-0 {
+  flex-shrink: 0;
+}
 .cursor-default {
   cursor: default;
 }
@@ -1906,6 +1927,9 @@ input.tab:checked + .tab-content,
 .grid-rows-3 {
   grid-template-rows: repeat(3, minmax(0, 1fr));
 }
+.flex-col {
+  flex-direction: column;
+}
 .items-center {
   align-items: center;
 }
@@ -1917,6 +1941,9 @@ input.tab:checked + .tab-content,
 }
 .justify-center {
   justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
 }
 .gap-1 {
   gap: 0.25rem;
@@ -1968,6 +1995,10 @@ input.tab:checked + .tab-content,
   font-size: 1.5rem;
   line-height: 2rem;
 }
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
 .text-5xl {
   font-size: 3rem;
   line-height: 1;
@@ -1983,10 +2014,6 @@ input.tab:checked + .tab-content,
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
 }
 .font-bold {
   font-weight: 700;

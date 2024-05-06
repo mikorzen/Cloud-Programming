@@ -20,14 +20,12 @@
 		<script>
 			document.addEventListener('alpine:init', () => {
 				Alpine.store('username', '')
-				Alpine.data('gameDialog', () => {
-					isOpen
-				})
 			})
 		</script>
 	</head>
 
 	<body
+		class="min-h-screen flex flex-col justify-between"
 		x-data="{
 			tab: 1,
 			usernameInput: '',
@@ -43,7 +41,7 @@
 			<section id="about" x-show="tab === 2">{% include "about.html" %}</section>
 		</main>
 
-		<footer class="footer footer-center p-4 bg-base-300 bottom-0">
+		<footer class="footer footer-center p-4 bg-base-300 shrink-0">
 		{% include "shared/_footer.html" %}
 		</footer>
 	</body>

@@ -4,6 +4,7 @@ from fastapi import WebSocket
 from game.state import GameState
 from models import (
     GameOver,
+    GameFullError,
     GameOverResponse,
     IllegalMoveError,
     PlayersResponse,
@@ -47,7 +48,9 @@ class GameManager:
         for player in self.players:
             if not player.get("websocket"):
                 player.update({"websocket": websocket})
-                break
+                return
+
+        raise GameFullError()
 
     async def assign_player(
         self: "GameManager",
@@ -59,10 +62,8 @@ class GameManager:
             await self.broadcast(ResponseType.STATE)
             return
 
-        player1_username = self.player1.get("username")
         self.player1.update({"opponent": username})
-        self.player2.update({"username": username, "opponent": player1_username})
-
+        self.player2.update({"username": username, "opponent": self.player1.get("username")})
         await self.broadcast(ResponseType.PLAYERS)
         await self.broadcast(ResponseType.STATE)
 
@@ -77,14 +78,13 @@ class GameManager:
             move = message.get("position")
             try:
                 self.game.make_move(int(move))
+                await self.broadcast(ResponseType.STATE)
             except IllegalMoveError as e:
                 await websocket.send_json(e.response.json())
-                continue
             except GameOver:
+                await self.broadcast(ResponseType.STATE)
                 await self.broadcast(ResponseType.GAME_OVER)
-                break
-
-            await self.broadcast(ResponseType.STATE)
+                return
 
     async def broadcast(self: "GameManager", response_type: ResponseType) -> None:
         for player in self.players:
