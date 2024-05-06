@@ -1,5 +1,50 @@
-{% extends "shared/_base.html" %}
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Demo site showcasing a simple tic-tac-toe web app created with the PyHAT stack."
+		/>
+		<title>Tic-tac-toe</title>
+		<link rel="icon" type="image/png" href="{{ url_for('static', path='favicon.png') }}" />
+		<link rel="stylesheet" href="{{ url_for('static', path='style.css') }}" />
+		<script
+			defer
+			src="https://unpkg.com/htmx.org@1.9.12"
+			integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+			crossorigin="anonymous"
+		></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
+		<script>
+			document.addEventListener('alpine:init', () => {
+				Alpine.store('username', '')
+				Alpine.data('gameDialog', () => {
+					isOpen
+				})
+			})
+		</script>
+	</head>
 
-{% block content %}
-cocka
-{% endblock content %}
+	<body
+		x-data="{
+			tab: 1,
+			usernameInput: '',
+			mySocket: null,
+		}"
+	>
+		<header>
+		{% include "shared/_header.html" %}
+		</header>
+
+		<main class="mb-20">
+			<section id="game" x-show="tab === 1">{% include "game.html" %}</section>
+			<section id="about" x-show="tab === 2">{% include "about.html" %}</section>
+		</main>
+
+		<footer class="footer footer-center p-4 bg-base-300 bottom-0">
+		{% include "shared/_footer.html" %}
+		</footer>
+	</body>
+</html>

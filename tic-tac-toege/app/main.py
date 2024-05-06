@@ -25,8 +25,15 @@ async def root(request: Request) -> HTMLResponse:
     return templates.TemplateResponse("index.html", context={"request": request})
 
 
+@app.get("/reset")
+async def reset(request: Request) -> HTMLResponse:
+    global game_manager  # noqa: PLW0603
+    game_manager = None
+    return templates.TemplateResponse("game.html", context={"request": request})
+
+
 @app.websocket("/game")
-async def game(websocket: WebSocket) -> None:
+async def game_server(websocket: WebSocket) -> None:
     global game_manager  # noqa: PLW0603
     if not game_manager:
         game_manager = GameManager()
@@ -43,4 +50,4 @@ async def game(websocket: WebSocket) -> None:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="localhost", port=8080)
+    uvicorn.run("main:app", host="localhost", port=8080, reload=True)

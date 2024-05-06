@@ -1,73 +1,83 @@
-from enum import Enum
+import abc
+from enum import IntEnum
 from typing import Any
 
+from pydantic import BaseModel, computed_field
 from pydantic.dataclasses import dataclass
 
 __all__ = [
-    "Cell",
+    "Square",
     "ResponseType",
     "Response",
     "GameFullError",
     "IllegalMoveError",
     "GameOver",
-    "Draw",
 ]
 
 
-class Cell(Enum):
-    X = True
-    O = False  # noqa: E741
-    EMPTY = None
+class Square(IntEnum):
+    EMPTY = 0
+    X = 1
+    O = 2  # noqa: E741
 
 
-class ResponseType(str, Enum):
-    ERROR = "error"
-    GAME_OVER = "game_over"
-    USERNAMES = "usernames"
-    STATE_CHANGE = "state_change"
+class ResponseType(IntEnum):
+    ERROR = 1
+    GAME_OVER = 2
+    PLAYERS = 3
+    STATE = 4
 
 
-@dataclass
-class Response:
-    type: ResponseType
-    message: str | dict[str, Any]
+class Response(BaseModel, abc.ABC):
+    @property
+    @abc.abstractmethod
+    def type(self: "Response") -> ResponseType: ...
 
     def json(self: "Response") -> dict[str, Any]:
-        return {"type": self.type, "message": self.message}
+        return self.model_dump()
+
+
+class ErrorResponse(Response):
+    type: ResponseType = ResponseType.ERROR
+    error: str
+
+
+class GameOverResponse(Response):
+    type: ResponseType = ResponseType.GAME_OVER
+    winner: Square | None
+
+    @computed_field
+    @property
+    def draw(self: "GameOverResponse") -> bool:
+        return self.winner is None
+
+
+class PlayersResponse(Response):
+    type: ResponseType = ResponseType.PLAYERS
+    player: Square
+    opponent: str | None
+
+
+class StateResponse(Response):
+    type: ResponseType = ResponseType.STATE
+    turn: Square
+    board: list[Square]
 
 
 @dataclass
-class BaseGameError(Exception):
-    response: Response
-
-
-class GameError(BaseGameError):
-    def __init__(self: "GameError", message: dict[str, Any]) -> None:
-        response = Response(
-            type=ResponseType.ERROR,
-            message=message,
-        )
-        super().__init__(response)
+class GameError(Exception, abc.ABC):
+    @property
+    @abc.abstractmethod
+    def response(self: "GameError") -> ErrorResponse: ...
 
 
 class GameFullError(GameError):
-    def __init__(self: "GameFullError") -> None:
-        message = {"error": "Game is full"}
-        super().__init__(message)
+    response: ErrorResponse = ErrorResponse(error="Game is full")
 
 
 class IllegalMoveError(GameError):
-    def __init__(self: "IllegalMoveError") -> None:
-        message = {"error": "Illegal move"}
-        super().__init__(message)
+    response: ErrorResponse = ErrorResponse(error="Illegal move")
 
 
-class GameOver(GameError):  # noqa: N818
-    def __init__(self: "GameOver", winner: Cell | None) -> None:
-        message = {"error": "Game over", "winner": winner}
-        super().__init__(message)
-
-
-class Draw(GameOver):
-    def __init__(self: "Draw") -> None:
-        super().__init__(None)
+class GameOver(Exception):  # noqa: N818
+    pass

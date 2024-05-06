@@ -1,0 +1,114 @@
+<script>
+	const messageTypes = {
+		ERROR: 1,
+		GAME_OVER: 2,
+		PLAYERS: 3,
+		STATE_UPDATE: 4,
+	};
+	const boardMap = new Map([
+		[0, ""],
+		[1, "X"],
+		[2, "O"],
+	]);
+	let player;
+	let opponent;
+
+	function onSocketMessage(message) {
+		const squares = document.querySelectorAll("#square-grid button");
+
+		const data = JSON.parse(message.data);
+		const type = data.type;
+
+		if (type === messageTypes.ERROR) {
+			gameDialog("Error", data.error);
+			return;
+		} else if (type === messageTypes.PLAYERS) {
+			const username = Alpine.store("username");
+			player = data.player;
+			opponent = data.opponent;
+			const symbol = boardMap.get(player);
+
+			document.getElementById("player-info").innerHTML =
+				`You (<span class="font-bold">${username}</span>) are playing  as ${symbol}`;
+
+			const opponentInfo = document.getElementById("opponent-info");
+			if (!opponent) {
+				opponentInfo.innerHTML = `waiting for an opponent...`;
+			} else {
+				opponentInfo.innerHTML = `against <span class="font-bold">${opponent}</span>`;
+			}
+			return;
+		} else if (type === messageTypes.GAME_OVER) {
+			let description;
+			const winner = data.winner;
+			if (winner) {
+				description =
+					winner === player
+						? `<span class="font-bold">You</span> win!`
+						: `<span class="font-bold">${opponent}</span> wins!`;
+			} else {
+				description = "It's a draw!";
+			}
+			gameOver(squares, data.error, description);
+		}
+		updateBoard(squares, data.turn, data.board);
+	}
+
+	function updateBoard(squares, turn, board) {
+		symbol = boardMap.get(turn);
+		document.getElementById("turn-info").innerHTML = `${symbol}'s turn`;
+		squares.forEach((square, i) => {
+			square.innerHTML = boardMap.get(board[i]);
+			if (board[i] !== 0 || turn !== player) {
+				square.disabled = true;
+				square.classList.remove("cursor-pointer");
+				square.classList.add("cursor-not-allowed");
+			}
+			if (board[i] === 0 && turn === player) {
+				square.disabled = false;
+				square.classList.remove("cursor-not-allowed");
+				square.classList.add("cursor-pointer");
+			}
+		});
+	}
+
+	function gameOver(squares, title, message) {
+		squares.forEach((square) => {
+			square.disabled = true;
+			square.classList.remove("cursor-pointer");
+			square.classList.add("cursor-not-allowed");
+		});
+		gameDialog(title, message);
+	}
+</script>
+
+<div x-data="{ isDialogOpen: false, dialogTitle: '', dialogMessage: '' }"
+	x-init="{
+		gameDialog(title, message) {
+			dialogTitle = title;
+			dialogMessage = message;
+			isDialogOpen = true;
+		}
+	}"
+>
+	{% include "partials/game/_game-info.html" %}
+
+	<div
+		id="square-grid"
+		class="mx-auto mt-4 grid size-[600px] grid-cols-3 grid-rows-3 rounded-xl border-8 border-solid border-transparent bg-base-300 font-['Helvetica'] text-5xl font-bold text-white"
+	>
+		{% for i in range(9) %}
+		<div class="flex items-center justify-center rounded-xl border-8 border-solid border-base-300">
+			<button
+				type="button"
+				class="size-full cursor-not-allowed rounded-lg bg-base-100"
+				data-index="{{ i }}"
+				disabled
+				@click="mySocket.send(JSON.stringify({ position: $event.target.dataset.index }))"
+			></button>
+		</div>
+		{% endfor %}
+	</div>
+
+	{% include "partials/game/_game-dialog.html" %}
+</div>

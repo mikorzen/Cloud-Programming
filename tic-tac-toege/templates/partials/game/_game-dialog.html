@@ -1,0 +1,17 @@
+<dialog id="game-dialog" class="modal" :class="{ 'modal-open': isDialogOpen }">
+	<div class="modal-box w-[30dvw] min-w-56">
+		<h2 class="text-2xl font-bold" x-text="dialogTitle"></h2>
+		<p class="pt-4 text-lg" x-text="dialogMessage"></p>
+	</div>
+	<form method="dialog" class="modal-backdrop">
+		<button
+			type="button"
+			class="cursor-default"
+			x-data="{ closeDialog() { isDialogOpen = false; } }"
+			@click.away="closeDialog"
+			@keyup.escape="closeDialog"
+		>
+			Close
+		</button>
+	</form>
+</dialog>

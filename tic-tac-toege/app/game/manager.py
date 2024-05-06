@@ -3,13 +3,17 @@ from typing import Any
 from fastapi import WebSocket
 from game.state import GameState
 from models import (
-    Draw,
     GameOver,
+    GameOverResponse,
     IllegalMoveError,
+    PlayersResponse,
     Response,
     ResponseType,
+    Square,
+    StateResponse,
 )
 
+type Message = dict[str, Any]
 type Player = dict[str, Any]
 type Players = tuple[Player, Player]
 
@@ -17,21 +21,21 @@ type Players = tuple[Player, Player]
 class GameManager:
     def __init__(self: "GameManager") -> None:
         self._game = GameState()
-        self._player_x: Player = {"symbol": "X"}
-        self._player_o: Player = {"symbol": "O"}
-        self._players: Players = (self._player_x, self._player_o)
+        self._player1: Player = {"player": Square.X}
+        self._player2: Player = {"player": Square.O}
+        self._players: Players = (self._player1, self._player2)
 
     @property
     def game(self: "GameManager") -> GameState:
         return self._game
 
     @property
-    def player_x(self: "GameManager") -> Player:
-        return self._player_x
+    def player1(self: "GameManager") -> Player:
+        return self._player1
 
     @property
-    def player_o(self: "GameManager") -> Player:
-        return self._player_o
+    def player2(self: "GameManager") -> Player:
+        return self._player2
 
     @property
     def players(self: "GameManager") -> Players:
@@ -45,54 +49,62 @@ class GameManager:
                 player.update({"websocket": websocket})
                 break
 
-    async def assign_username(
+    async def assign_player(
         self: "GameManager",
-        websocket: WebSocket,
         username: str,
     ) -> None:
-        for player in self.players:
-            if player.get("websocket") == websocket:
-                player.update({"username": username})
+        if not self.player1.get("username"):
+            self.player1.update({"username": username})
+            await self.broadcast(ResponseType.PLAYERS)
+            await self.broadcast(ResponseType.STATE)
+            return
 
-        message = {
-            "player_x": self.player_x.get("username"),
-            "player_o": self.player_o.get("username"),
-        }
+        player1_username = self.player1.get("username")
+        self.player1.update({"opponent": username})
+        self.player2.update({"username": username, "opponent": player1_username})
 
-        await websocket.send_json(
-            Response(type=ResponseType.USERNAMES, message=message).json(),
-        )
+        await self.broadcast(ResponseType.PLAYERS)
+        await self.broadcast(ResponseType.STATE)
 
     async def run_game(self: "GameManager", websocket: WebSocket) -> None:
         while True:
             message = await websocket.receive_json()
 
             if username := message.get("username"):
-                await self.assign_username(websocket, username)
+                await self.assign_player(username)
                 continue
 
             move = message.get("position")
             try:
-                self.game.make_move(move)
+                self.game.make_move(int(move))
             except IllegalMoveError as e:
                 await websocket.send_json(e.response.json())
                 continue
-            except (Draw, GameOver) as e:
-                await websocket.send_json(e.response.json())
+            except GameOver:
+                await self.broadcast(ResponseType.GAME_OVER)
                 break
 
-            await self.broadcast_state(websocket)
+            await self.broadcast(ResponseType.STATE)
 
-    async def broadcast_state(self: "GameManager", websocket: WebSocket) -> None:
-        message = {
-            "turn": self.game.turn,
-            "board": self.game.board,
-        }
+    async def broadcast(self: "GameManager", response_type: ResponseType) -> None:
         for player in self.players:
-            message["player"] = player["symbol"]
-            await websocket.send_json(
-                Response(
-                    type=ResponseType.STATE_CHANGE,
-                    message=message,
-                ).json(),
-            )
+            websocket = player.get("websocket")
+            if not websocket:
+                continue
+            response: Response
+            match response_type:
+                case ResponseType.GAME_OVER:
+                    response = GameOverResponse(
+                        winner=self.game.winner,
+                    )
+                case ResponseType.PLAYERS:
+                    response = PlayersResponse(
+                        player=player["player"],
+                        opponent=player.get("opponent"),
+                    )
+                case ResponseType.STATE:
+                    response = StateResponse(
+                        turn=self.game.turn,
+                        board=self.game.board,
+                    )
+            await websocket.send_json(response.json())
