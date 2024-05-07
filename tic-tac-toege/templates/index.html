@@ -18,31 +18,29 @@
 		></script>
 		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
 		<script>
-			document.addEventListener('alpine:init', () => {
-				Alpine.store('username', '')
-			})
+			document.addEventListener("alpine:init", () => {
+				Alpine.store("username", "");
+			});
 		</script>
 	</head>
 
 	<body
-		class="min-h-screen flex flex-col justify-between"
+		class="flex min-h-screen flex-col justify-between"
 		x-data="{
 			tab: 1,
 			usernameInput: '',
 			mySocket: null,
 		}"
 	>
-		<header>
-		{% include "shared/_header.html" %}
-		</header>
+		<header>{% include "shared/_header.html" %}</header>
 
 		<main class="mb-20">
 			<section id="game" x-show="tab === 1">{% include "game.html" %}</section>
 			<section id="about" x-show="tab === 2">{% include "about.html" %}</section>
 		</main>
 
-		<footer class="footer footer-center p-4 bg-base-300 shrink-0">
-		{% include "shared/_footer.html" %}
+		<footer class="footer footer-center shrink-0 bg-base-300 p-4">
+			{% include "shared/_footer.html" %}
 		</footer>
 	</body>
 </html>
