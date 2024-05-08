@@ -15,6 +15,14 @@ from joserfc.jwt import JWTClaimsRegistry, Token, decode
 from models import GameFullError
 from starlette.middleware.sessions import SessionMiddleware
 
+GRANT_TYPE_CODE = "authorization_code"
+GRANT_TYPE_REFRESH = "refresh_token"
+CLIENT_ID = "53v0am9k2tme1vkrvv759a7rke"
+
+REDIRECT_URI = "http://localhost:8080/login"
+KEY_URI = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_jK2QTRvFn/.well-known/jwks.json"
+TOKEN_URI = "https://ttt-game.auth.us-east-1.amazoncognito.com/oauth2/token"  # noqa: S105
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -41,13 +49,13 @@ class NotAuthenticatedError(Exception): ...
 
 def get_token_data(code: str) -> dict[str, Any]:
     request_data = {
-        "grant_type": "authorization_code",
-        "client_id": "53v0am9k2tme1vkrvv759a7rke",
+        "grant_type": GRANT_TYPE_CODE,
+        "client_id": CLIENT_ID,
         "code": code,
-        "redirect_uri": "http://localhost:8080/login",
+        "redirect_uri": REDIRECT_URI,
     }
     response = requests.post(  # noqa: S113
-        "https://ttt-game.auth.us-east-1.amazoncognito.com/oauth2/token",
+        TOKEN_URI,
         data=request_data,
     )
     return response.json()
@@ -63,9 +71,7 @@ def validate_token(request: Request) -> Token:
     access_token, refresh_token = get_tokens(request)
     global key_set  # noqa: PLW0603
     if not key_set:
-        response = requests.get(  # noqa: S113
-            "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_jK2QTRvFn/.well-known/jwks.json",
-        )
+        response = requests.get(KEY_URI)  # noqa: S113
         key_set = KeySet.import_key_set(response.json())
     if not access_token:
         raise NotAuthenticatedError
@@ -81,16 +87,15 @@ def renew_token(request: Request, refresh_token: str | None) -> None:
     if not refresh_token:
         raise NotAuthenticatedError
     request_data = {
-        "grant_type": "refresh_token",
-        "client_id": "53v0am9k2tme1vkrvv759a7rke",
+        "grant_type": GRANT_TYPE_REFRESH,
+        "client_id": CLIENT_ID,
         "refresh_token": refresh_token,
     }
     response = requests.post(  # noqa: S113
-        "https://ttt-game.auth.us-east-1.amazoncognito.com/oauth2/token",
+        TOKEN_URI,
         data=request_data,
     ).json()
     request.session["access_token"] = response.get("access_token")
-    request.session["refresh_token"] = response.get("refresh_token")
 
 
 def show_dialog_headers(title: str, message: str) -> dict[str, Any]:
