@@ -105,9 +105,10 @@ def show_dialog_headers(title: str, message: str) -> dict[str, Any]:
 
 @app.get("/")
 async def root(request: Request) -> HTMLResponse:
+    context = {}
     try:
         token = validate_token(request)
-        context = {"username": token.claims.get("username")}
+        context.update({"username": token.claims.get("username")})
     except NotAuthenticatedError:
         ...
     return templates.TemplateResponse(
@@ -200,4 +201,4 @@ async def game_server(websocket: WebSocket) -> None:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="localhost", port=8080, reload=True)
+    uvicorn.run("main:app", host="localhost", port=8080)
