@@ -1,0 +1,62 @@
+<nav class="navbar mx-3 my-3 w-auto rounded-box bg-base-300">
+	<div class="w-1/5 justify-start gap-1">
+		<ul class="menu menu-horizontal items-center text-base">
+			<li>
+				<a class="px-3 text-2xl font-bold" @click="tab = 1"> Tic-tac-toe </a>
+			</li>
+			{# <li>
+				<a class="px-3" @click="tab = 2"> About </a>
+			</li> #}
+			<!-- <li><a class="px-3">Contact</a></li> -->
+		</ul>
+	</div>
+	<div class="w-3/5 justify-center">
+		<button
+			id="button-connect"
+			class="btn btn-ghost ml-2 text-xl"
+			title="Connect to the game server"
+			hx-get="/game"
+			hx-target="#game"
+		>
+			Connect
+		</button>
+		<button
+			type="reset"
+			class="btn btn-square btn-ghost mr-2"
+			title="Reset game"
+			hx-get="/reset"
+			hx-target="#game"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 512 512">
+				<path
+					fill="none"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-miterlimit="10"
+					stroke-width="32"
+					d="m400 148l-21.12-24.57A191.43 191.43 0 0 0 240 64C134 64 48 150 48 256s86 192 192 192a192.09 192.09 0 0 0 181.07-128"
+				/>
+				<path
+					fill="currentColor"
+					d="M464 97.42V208a16 16 0 0 1-16 16H337.42c-14.26 0-21.4-17.23-11.32-27.31L436.69 86.1C446.77 76 464 83.16 464 97.42"
+				/>
+			</svg>
+		</button>
+	</div>
+	<div class="w-1/5 justify-end gap-1">
+		<ul class="menu menu-horizontal items-center text-base">
+			<li>
+				{% if username %}
+				<a class="px-3" href="{{ url_for('logout') }}"> Welcome, {{ username }} </a>
+				{% else %}
+				<a
+					class="px-3"
+					href="https://ttt-game.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=53v0am9k2tme1vkrvv759a7rke&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Flogin"
+				>
+					Login
+				</a>
+				{% endif %}
+			</li>
+		</ul>
+	</div>
+</nav>

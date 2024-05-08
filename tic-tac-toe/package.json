@@ -1,28 +1,32 @@
 {
-	"dependencies": {},
-	"devDependencies": {
-		"autoprefixer": "^10.4.17",
-		"daisyui": "^4.7.2",
-		"postcss": "^8.4.35",
-		"postcss-cli": "^11.0.0",
-		"postcss-load-config": "^5.0.3",
-		"prettier": "^3.2.5",
-		"prettier-plugin-tailwindcss": "^0.5.11",
-		"tailwindcss": "^3.4.1"
-	},
-	"watch": {
-		"build:tailwindcss": {
-			"patterns": [
-				"static/**/*.{html,ts}",
-				"templates/**/*.{html,ts}"
-			],
-			"extensions": "html,ts",
-			"quiet": false
-		}
-	},
-	"scripts": {
-		"build:css": "postcss ./static/base.css --config css-config -o ./static/styles.css",
-		"watch:css": "bun run build:css --watch"
-	},
-	"type": "module"
+  "dependencies": {
+    "alpinejs": "^3.13.8",
+    "htmx.org": "^1.9.11"
+  },
+  "devDependencies": {
+    "@types/alpinejs": "^3.13.10",
+    "autoprefixer": "^10.4.19",
+    "daisyui": "^4.10.1",
+    "postcss": "^8.4.38",
+    "postcss-cli": "^11.0.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.13",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
+  },
+  "watch": {
+    "build:tailwindcss": {
+      "patterns": [
+        "static/**/*.{html,ts}",
+        "templates/**/*.{html,ts}"
+      ],
+      "extensions": "html,ts",
+      "quiet": false
+    }
+  },
+  "scripts": {
+    "build:css": "postcss ./static/main.css -o ./static/style.css",
+    "watch:css": "bun run build:css --watch"
+  },
+  "type": "module"
 }
