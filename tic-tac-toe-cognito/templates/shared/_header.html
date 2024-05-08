@@ -4,9 +4,11 @@
 			<li>
 				<a class="px-3 text-2xl font-bold" @click="tab = 1"> Tic-tac-toe </a>
 			</li>
-			{# <li>
+			{#
+			<li>
 				<a class="px-3" @click="tab = 2"> About </a>
-			</li> #}
+			</li>
+			#}
 			<!-- <li><a class="px-3">Contact</a></li> -->
 		</ul>
 	</div>
@@ -47,7 +49,12 @@
 		<ul class="menu menu-horizontal items-center text-base">
 			<li>
 				{% if username %}
-				<a class="px-3" href="{{ url_for('logout') }}"> Welcome, {{ username }} </a>
+				<a
+					class="px-3"
+					href="https://ttt-game.auth.us-east-1.amazoncognito.com/logout?client_id=53v0am9k2tme1vkrvv759a7rke&logout_uri=http%3A%2F%2Flocalhost%3A8080%2Flogout"
+				>
+					Welcome, {{ username }}
+				</a>
 				{% else %}
 				<a
 					class="px-3"

@@ -5,14 +5,14 @@ from typing import Any
 
 import requests
 from config import static_files, templates
-from fastapi import Depends, FastAPI, Request, Response, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from game.manager import GameManager
 from joserfc.errors import ExpiredTokenError
 from joserfc.jwk import KeySet
 from joserfc.jwt import JWTClaimsRegistry, Token, decode
-from models import ErrorResponse, GameFullError
+from models import GameFullError
 from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
@@ -105,10 +105,9 @@ def show_dialog_headers(title: str, message: str) -> dict[str, Any]:
 
 @app.get("/")
 async def root(request: Request) -> HTMLResponse:
-    context = {}
     try:
         token = validate_token(request)
-        context.update({"username": token.claims.get("username")})
+        context = {"username": token.claims.get("username")}
     except NotAuthenticatedError:
         ...
     return templates.TemplateResponse(
@@ -121,16 +120,12 @@ async def root(request: Request) -> HTMLResponse:
 @app.get("/login")
 async def login(request: Request) -> HTMLResponse:
     code = request.query_params.get("code")
-    context = {}
-    try:
-        if code and not get_tokens(request)[0]:
-            token_data = get_token_data(code)
-            request.session["access_token"] = token_data.get("access_token")
-            request.session["refresh_token"] = token_data.get("refresh_token")
-        token: Token = validate_token(*get_tokens(request))  # type: ignore[arg-type]
-        context.update({"username": token.claims.get("username")})
-    except Exception:
-        print("jest")
+    if code and not get_tokens(request)[0]:
+        token_data = get_token_data(code)
+        request.session["access_token"] = token_data.get("access_token")
+        request.session["refresh_token"] = token_data.get("refresh_token")
+    token: Token = validate_token(request)  # type: ignore[arg-type]
+    context = {"username": token.claims.get("username")}
     return templates.TemplateResponse(
         request=request,
         name="index.html",
