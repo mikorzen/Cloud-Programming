@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Demo site showcasing uploading and downloading files to and from an S3 bucket."
+		/>
+		<title>S3 file upload/download</title>
+		<link rel="icon" type="image/png" href="{{ url_for('static', file_path='/favicon.png') }}" />
+		<link rel="stylesheet" href="{{ url_for('static', file_path='/style.css') }}" />
+		<script
+			defer
+			src="https://unpkg.com/htmx.org@1.9.12"
+			integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+			crossorigin="anonymous"
+		></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
+	</head>
+
+	<body class="flex flex-col min-h-screen justify-start">
+		<header class="mb-12">{% include "shared/_header.html" %}</header>
+
+		<main class="w-1/4 min-w-96 mx-auto">
+			<section id="files" class="mb-12" hx-get="/files" hx-trigger="load">
+			</section>
+			<section id="upload" class="max-w-sm mx-auto">
+				<form class="flex flex-col items-center justify-center" 
+					x-data="{ file_name: '' }" 
+					hx-post="/upload" hx-target="#files" 
+					hx-encoding="multipart/form-data"
+				>
+					<label class="input input-bordered flex items-center gap-2 w-full mb-3">
+						File name
+						<input type="text" name="name" class="grow border-l-[1px] input-bordered pl-3" x-model="file_name" />
+					</label>
+					<input type="file" name="file" class="file-input file-input-bordered w-full mb-3" @input="file_name = $event.target.files[0].name" />
+					<button type="submit" class="btn self-end">
+						Upload
+						<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" class="fill-current -mr-1"><path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
+					</button>
+				</form>
+			</section>
+		</main>
+
+		<footer class="footer footer-center shrink-0 bg-base-300 p-4 mt-auto">
+			{% include "shared/_footer.html" %}
+		</footer>
+	</body>
+
+</html>

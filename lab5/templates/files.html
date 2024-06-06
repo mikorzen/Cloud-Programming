@@ -1,0 +1,67 @@
+<label class="form-control">
+    <div class="label">
+        <span class="ml-2 label-text text-lg font-semibold">Uploaded files</span>
+    </div>
+
+    <div class="overflow-x-auto p-2 border-2 input-bordered rounded-xl">
+        <table class="table">
+            <thead class="text-base">
+                <tr>
+                    <th class="text-right">ID</th>
+                    <th>File name</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody class="text-base">
+                {% for file in files %}
+                    <tr 
+                        x-data="{ 
+                        editing: false,
+                        file_name: '{{ file.name }}',
+                        cancelEditing() { 
+                            this.editing = false; 
+                            this.file_name = '{{ file.name }}'; 
+                        },
+                    }">
+                        <td class="text-right">{{ file.id }}</td>
+
+                        <td x-show="!editing">{{ file.name }}</td>
+                        <td x-show="editing">
+                            <input type="text" class="input input-bordered" x-model="file_name" />
+                        </td>
+
+                        <td x-show="!editing">
+                            <div class="flex flex-row justify-end">
+                                <a href="/download/{{ file.id }}" class="mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#e8eaed"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
+                                </a>
+                                <a href="#" @click="editing = true" class="mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#e8eaed"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                                </a>
+                                <a href="#" hx-get="/delete/{{ file.id }}" hx-target="#files">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                                </a>
+                            </div>
+                        </td>
+                        <td x-show="editing">
+                            <div class="flex flex-row justify-end">
+                                <a href="#" @click="cancelEditing" class="mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#e8eaed"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                                </a>
+                                <a 
+                                    href="#"
+                                    x-init="$watch('file_name', () => htmx.process($el))"
+                                    x-bind:hx-get="'/edit/{{ file.id }}?name=' + file_name" 
+                                    hx-target="#files" 
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#e8eaed"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</label>

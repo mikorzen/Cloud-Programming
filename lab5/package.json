@@ -1,18 +1,19 @@
 {
+	"name": "lab5",
 	"dependencies": {
-		"alpinejs": "^3.13.8",
-		"htmx.org": "^1.9.11"
+		"alpinejs": "^3.14.0",
+		"htmx.org": "^1.9.12"
 	},
 	"devDependencies": {
-		"@types/alpinejs": "^3.13.10",
+		"@types/bun": "latest",
 		"autoprefixer": "^10.4.19",
-		"daisyui": "^4.10.1",
+		"daisyui": "^4.11.1",
 		"postcss": "^8.4.38",
 		"postcss-cli": "^11.0.0",
-		"prettier": "^3.2.5",
-		"prettier-plugin-tailwindcss": "^0.5.13",
+		"prettier": "^3.3.0",
+		"prettier-plugin-tailwindcss": "^0.6.1",
 		"tailwindcss": "^3.4.3",
-		"typescript": "^5.4.5"
+		"typescript": "^5.0.0"
 	},
 	"watch": {
 		"build:tailwindcss": {
